@@ -2,10 +2,41 @@ package oncall.domain.day;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Days {
     private List<Day> days = new ArrayList<>();
+
+    public void changeWork() {
+        for (int i = 1; i < days.size(); i++) {
+            if (checkName(i)) {
+                int nextPerson = checkNextPerson(i);
+                String tempName = days.get(i).getName();
+                days.get(i).setName(days.get(nextPerson).getName());
+                days.get(nextPerson).setName(tempName);
+
+            }
+        }
+    }
+
+    private int checkNextPerson(int startIndex) {
+        for (int i = startIndex + 1; i < days.size(); i++) {
+            if (checkDescriptionType(startIndex) == checkDescriptionType(i)) {
+                return i;
+            }
+        }
+        return startIndex;
+    }
+
+    private boolean checkName(int index) {
+        return days.get(index).getName().equals(days.get(index-1).getName());
+    }
+
+    private boolean checkDescriptionType(int index) {
+        return (days.get(index).getDescription().matches("[월화수목금]$")) && !days.get(index).isHoliday();
+    }
 
     public void addCalendar(int month, String startDescription) {
         int dayNumber = DayDescription.geStartIndex(startDescription);
